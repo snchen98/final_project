@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.capgemini.entity.Department;
+import com.capgemini.exceptions.ResourceNotFoundException;
 import com.capgemini.repository.DepartmentRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,10 @@ public class DepartmentService implements DepartmentServiceInterface {
         return departmentRepository.findById(id);
     }
     public Department setDepartmentDetails(Department department) {
-        return departmentRepository.save(department);
+        if (departmentRepository.findById(department.getId()).isPresent()) {
+            return departmentRepository.save(department);
+        }
+        throw new ResourceNotFoundException("Can't find the department with id: " + department.getId());
     }
     public void deleteDepartmentbyId(int id) {
         if (departmentRepository.findById(id).isPresent()) {

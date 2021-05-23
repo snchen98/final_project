@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.capgemini.entity.Project;
+import com.capgemini.exceptions.ResourceNotFoundException;
 import com.capgemini.repository.ProjectRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,10 @@ public class ProjectService implements ProjectServiceInterface {
         return projectRepository.findById(id);
     }
     public Project setProjectDetails(Project project) {
-        return projectRepository.save(project);
+        if (projectRepository.findById(project.getId()).isPresent()) {
+            return projectRepository.save(project);
+        }
+        throw new ResourceNotFoundException("Can't find project with id: " + project.getId());
     }
     public void deleteProjectById(int id) {
         if (projectRepository.findById(id).isPresent()) {

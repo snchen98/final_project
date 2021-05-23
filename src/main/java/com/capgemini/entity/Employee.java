@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -14,6 +13,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.transaction.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
 @Entity
 @Transactional
 @Table(name = "EMPLOYEE")
@@ -31,7 +34,7 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
-    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "address_id")
     private Address address;
 
@@ -83,7 +86,7 @@ public class Employee {
     }
 
     public Optional<Department> getDepartment() {
-        return Optional.of(this.department);
+        return Optional.ofNullable(this.department);
     }
 
     public void setDepartment(Department department) {
@@ -91,7 +94,7 @@ public class Employee {
     }
 
     public Optional<Project> getProject() {
-        return Optional.of(this.project);
+        return Optional.ofNullable(this.project);
     }
 
     public void setProject(Project project) {
@@ -99,11 +102,22 @@ public class Employee {
     }
 
     public Optional<Address> getAddress() {
-        return Optional.of(this.address);
+        return Optional.ofNullable(this.address);
     }
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Employee )) return false;
+        return this.id == ((Employee) o).getId();
+    }
+ 
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
 }

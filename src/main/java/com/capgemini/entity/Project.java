@@ -2,11 +2,13 @@ package com.capgemini.entity;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import org.springframework.lang.NonNull;
 
@@ -63,5 +65,13 @@ public class Project {
         this.employees = employees;
     }
 
+    public void addEmployee(Employee employee) {
+        this.employees.add(employee);
+        employee.setProject(this);
+    }
     
+    public void removeEmployee(Employee employee) {
+        this.employees.remove(employee);
+        employee.setProject(null);
+    }
 }

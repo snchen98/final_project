@@ -4,10 +4,14 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import org.springframework.lang.NonNull;
 
@@ -20,16 +24,20 @@ public class Department {
     @NonNull
     private String title;
     private String description;
-    @OneToMany(mappedBy = "department", orphanRemoval = true)
+    @OneToMany(mappedBy = "department")
     private List<Employee> employees;
-/* 
+
+    public Department() {
+        super();
+    }
+
     public Department(int id, String title, String description, List<Employee> employees) {
         super();
         this.id = id;
         this.title = title;
         this.description = description;
         this.employees = employees;
-    } */
+    }
 
     public int getId() {
         return this.id;
@@ -61,5 +69,15 @@ public class Department {
 
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
+    }
+
+    public void addEmployee(Employee employee) {
+        this.employees.add(employee);
+        employee.setDepartment(this);
+    }
+
+    public void removeEmployee(Employee employee) {
+        this.employees.remove(employee);
+        employee.setDepartment(null);
     }
 }
