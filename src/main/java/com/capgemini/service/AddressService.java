@@ -22,8 +22,13 @@ public class AddressService implements AddressServiceInterface {
     public List<Address> getAllAddress() {
         return addressRepository.findAll();
     }
-    public Optional<Address> getAddressById(int id) {
-        return addressRepository.findById(id);
+    public Address getAddressById(int id) {
+        Optional<Address> address = addressRepository.findById(id);
+        if (address.isPresent()) {
+            return address.get();
+        }
+        throw new ResourceNotFoundException("Can't find address with id: " + id);
+
     }
     public Address setAddressDetails(Address address) {
         if (addressRepository.findById(address.getId()).isPresent()) {

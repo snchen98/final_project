@@ -1,7 +1,6 @@
 package com.capgemini.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -11,10 +10,10 @@ import com.capgemini.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,7 +27,7 @@ public class AddressController {
     }
 
     @GetMapping("/address/{id}")
-    public Optional<Address> getAddressById(@RequestParam int id) {
+    public Address getAddressById(@PathVariable int id) {
         return addressService.getAddressById(id);
     }
 
@@ -43,7 +42,7 @@ public class AddressController {
     }
 
     @DeleteMapping("/address/{id}")
-    public void deleteAddressById(@RequestParam int id) {
+    public void deleteAddressById(@PathVariable int id) {
         addressService.deleteAddressById(id);
     }
 

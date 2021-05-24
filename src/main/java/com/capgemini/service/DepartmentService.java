@@ -22,8 +22,12 @@ public class DepartmentService implements DepartmentServiceInterface {
     public List<Department> getAllDepartment() {
         return departmentRepository.findAll();
     }
-    public Optional<Department> getDepartmentById(int id) {
-        return departmentRepository.findById(id);
+    public Department getDepartmentById(int id) {
+        Optional<Department> department = departmentRepository.findById(id);
+        if (department.isPresent()) {
+            return department.get();
+        }
+        throw new ResourceNotFoundException("can't find the department with id: " + id);
     }
     public Department setDepartmentDetails(Department department) {
         if (departmentRepository.findById(department.getId()).isPresent()) {
@@ -34,6 +38,8 @@ public class DepartmentService implements DepartmentServiceInterface {
     public void deleteDepartmentbyId(int id) {
         if (departmentRepository.findById(id).isPresent()) {
             departmentRepository.deleteById(id);
+            return;
         }
+        throw new ResourceNotFoundException("Deparment with id: " + id + " does not exist in database");
     }
 }

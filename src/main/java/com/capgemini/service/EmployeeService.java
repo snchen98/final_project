@@ -27,8 +27,12 @@ public class EmployeeService implements EmployeeServiceInterface{
     public List<Employee> getAllEmployee() {
         return employeeRepository.findAll();
     }
-    public Optional<Employee> getEmployeeById(int id) {
-        return employeeRepository.findById(id);
+    public Employee getEmployeeById(int id) {
+        Optional<Employee> employee = employeeRepository.findById(id);
+        if (employee.isPresent()) {
+            return employee.get();
+        }
+        throw new ResourceNotFoundException("Can't find employee with id: " + id);
     }
     public List<Employee> getEmployeeByDepartment(int departmentId) {
         return employeeRepository.findByDepartmentId(departmentId);

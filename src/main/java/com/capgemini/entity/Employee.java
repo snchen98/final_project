@@ -34,7 +34,7 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "address_id")
     private Address address;
 

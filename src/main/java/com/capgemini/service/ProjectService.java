@@ -21,8 +21,12 @@ public class ProjectService implements ProjectServiceInterface {
     public List<Project> getAllProject() {
         return projectRepository.findAll();
     }
-    public Optional<Project> getProjectById(int id) {
-        return projectRepository.findById(id);
+    public Project getProjectById(int id) {
+        Optional<Project> project = projectRepository.findById(id);
+        if (project.isPresent()) {
+            return project.get();
+        }
+        throw new ResourceNotFoundException("Can't find project with id: " + id);
     }
     public Project setProjectDetails(Project project) {
         if (projectRepository.findById(project.getId()).isPresent()) {
