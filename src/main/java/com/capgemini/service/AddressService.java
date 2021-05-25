@@ -18,7 +18,7 @@ public class AddressService implements AddressServiceInterface {
     AddressRepository addressRepository;
 
     public Address addAddress(Address address) {
-        if (addressRepository.findById(address.getId()).isEmpty()) {
+        if (!addressRepository.findById(address.getId()).isPresent()) {
             return addressRepository.save(address);
         }
         throw new ResourceAlreadyExistsException("Address with id: " + address.getId() + " already exists");

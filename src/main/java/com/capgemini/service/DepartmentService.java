@@ -18,7 +18,7 @@ public class DepartmentService implements DepartmentServiceInterface {
     DepartmentRepository departmentRepository;
 
     public Department addDepartment(Department department) {
-        if (departmentRepository.findById(department.getId()).isEmpty()) {
+        if (!departmentRepository.findById(department.getId()).isPresent()) {
             return departmentRepository.save(department);
         }
         throw new ResourceAlreadyExistsException("Department with id :" + department.getId() + " already exists");

@@ -17,7 +17,7 @@ public class ProjectService implements ProjectServiceInterface {
     ProjectRepository projectRepository;
 
     public Project addProject(Project project) {
-        if (projectRepository.findById(project.getId()).isEmpty()) {
+        if (!projectRepository.findById(project.getId()).isPresent()) {
             return projectRepository.save(project);
         }
         throw new ResourceAlreadyExistsException("Project with id: " + project.getId() + " already exists");

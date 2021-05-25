@@ -23,7 +23,7 @@ public class EmployeeService implements EmployeeServiceInterface{
     ProjectService projectService;
 
     public Employee addEmployee(Employee employee) {
-        if (employeeRepository.findById(employee.getId()).isEmpty()) {
+        if (!employeeRepository.findById(employee.getId()).isPresent()) {
             return employeeRepository.save(employee);
         }
         throw new ResourceAlreadyExistsException("Employee with id: " + employee.getId() + " already exists");
