@@ -11,4 +11,8 @@ public class ControllerExceptionHandler {
     public Response resourceNotFoundException(ResourceNotFoundException ex) {
         return new ResponseBuilder().code("404").description(ex.getMessage()).build();
     }
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public Response resourceAlreadyExistsException(ResourceAlreadyExistsException ex) {
+        return new ResponseBuilder().code("409").description(ex.getMessage()).build();
+    }
 }

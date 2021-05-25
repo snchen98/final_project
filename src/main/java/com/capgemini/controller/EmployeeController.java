@@ -99,7 +99,7 @@ public class EmployeeController {
         }
         if (address.isPresent()) {
             // Check if employee has an address already
-            addressService.addAdress(address.get());
+            addressService.addAddress(address.get());
         }
     }
 }

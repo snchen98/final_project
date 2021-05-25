@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.capgemini.entity.Project;
+import com.capgemini.exceptions.ResourceAlreadyExistsException;
 import com.capgemini.exceptions.ResourceNotFoundException;
 import com.capgemini.repository.ProjectRepository;
 
@@ -16,7 +17,10 @@ public class ProjectService implements ProjectServiceInterface {
     ProjectRepository projectRepository;
 
     public Project addProject(Project project) {
-        return projectRepository.save(project);
+        if (projectRepository.findById(project.getId()).isEmpty()) {
+            return projectRepository.save(project);
+        }
+        throw new ResourceAlreadyExistsException("Project with id: " + project.getId() + " already exists");
     }
     public List<Project> getAllProject() {
         return projectRepository.findAll();

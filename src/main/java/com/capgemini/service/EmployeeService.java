@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.capgemini.entity.Employee;
+import com.capgemini.exceptions.ResourceAlreadyExistsException;
 import com.capgemini.exceptions.ResourceNotFoundException;
 import com.capgemini.repository.EmployeeRepository;
 
@@ -22,7 +23,10 @@ public class EmployeeService implements EmployeeServiceInterface{
     ProjectService projectService;
 
     public Employee addEmployee(Employee employee) {
-        return employeeRepository.save(employee);
+        if (employeeRepository.findById(employee.getId()).isEmpty()) {
+            return employeeRepository.save(employee);
+        }
+        throw new ResourceAlreadyExistsException("Employee with id: " + employee.getId() + " already exists");
     }
     public List<Employee> getAllEmployee() {
         return employeeRepository.findAll();

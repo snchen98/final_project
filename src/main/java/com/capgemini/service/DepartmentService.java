@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.capgemini.entity.Department;
+import com.capgemini.exceptions.ResourceAlreadyExistsException;
 import com.capgemini.exceptions.ResourceNotFoundException;
 import com.capgemini.repository.DepartmentRepository;
 
@@ -17,7 +18,10 @@ public class DepartmentService implements DepartmentServiceInterface {
     DepartmentRepository departmentRepository;
 
     public Department addDepartment(Department department) {
-        return departmentRepository.save(department);
+        if (departmentRepository.findById(department.getId()).isEmpty()) {
+            return departmentRepository.save(department);
+        }
+        throw new ResourceAlreadyExistsException("Department with id :" + department.getId() + " already exists");
     }
     public List<Department> getAllDepartment() {
         return departmentRepository.findAll();

@@ -33,10 +33,10 @@ public class AddressController {
 
     @PostMapping("/address")
     public Address addAddress(@RequestBody @Valid Address address) {
-        return addressService.addAdress(address);
+        return addressService.addAddress(address);
     }
 
-    @PutMapping("/address/")
+    @PutMapping("/address")
     public Address setAddressDetails(@RequestBody @Valid Address address) {
         return addressService.setAddressDetails(address);
     }
