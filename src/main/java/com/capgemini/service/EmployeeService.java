@@ -60,5 +60,6 @@ public class EmployeeService implements EmployeeServiceInterface{
         if (employeeRepository.findById(id).isPresent()) {
             employeeRepository.deleteById(id);
         }
+        throw new ResourceNotFoundException("Employee with id: " + id + " does not exist in database");
     }
 }

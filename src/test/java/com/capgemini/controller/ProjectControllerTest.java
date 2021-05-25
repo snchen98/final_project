@@ -62,9 +62,9 @@ public class ProjectControllerTest {
     }
     @Test
     public void getAllProjectSuccess() throws Exception {
-        List<Project> ProjectL = new ArrayList<Project>();
-        ProjectL.add(project);
-        Mockito.when(projectService.getAllProject()).thenReturn(ProjectL);
+        List<Project> projectL = new ArrayList<Project>();
+        projectL.add(project);
+        Mockito.when(projectService.getAllProject()).thenReturn(projectL);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/project")
             .contentType(MediaType.APPLICATION_JSON);

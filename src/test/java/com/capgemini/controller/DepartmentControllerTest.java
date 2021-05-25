@@ -60,7 +60,7 @@ public class DepartmentControllerTest {
     }
 
     @Test
-    public void getAllDepartmentuccess() throws Exception {
+    public void getAllDepartmentSuccess() throws Exception {
         List<Department> departmentL = new ArrayList<Department>();
         departmentL.add(department);
         Mockito.when(departmentService.getAllDepartment()).thenReturn(departmentL);
@@ -93,7 +93,7 @@ public class DepartmentControllerTest {
     }
     
     @Test
-    public void addDepartmentuccess() throws Exception {
+    public void addDepartmentSuccess() throws Exception {
         String departmentJson = mapper.writeValueAsString(department);
         Mockito.when(departmentService.addDepartment(any(Department.class))).thenReturn(department);
         RequestBuilder requestBuilder = MockMvcRequestBuilders

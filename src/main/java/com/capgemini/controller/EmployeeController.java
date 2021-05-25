@@ -44,19 +44,19 @@ public class EmployeeController {
     public Employee getEmployeeById(@PathVariable int id) {
         return employeeService.getEmployeeById(id);
     }
-    @GetMapping("/employee/{departmentId}")
-    public List<Employee> getEmployeeByDepartment(@RequestParam int departmentId) {
+    @GetMapping("/employee/department/{departmentId}")
+    public List<Employee> getEmployeeByDepartment(@PathVariable int departmentId) {
         return employeeService.getEmployeeByDepartment(departmentId);
     }
-    @GetMapping("/employee/{designation}")
-    public List<Employee> getEmployeeByDesignation(@RequestParam String designation) {
+    @GetMapping("/employee/designation/{designation}")
+    public List<Employee> getEmployeeByDesignation(@PathVariable String designation) {
         return employeeService.getEmployeeByDesignation(designation);
     }
-    @GetMapping("/employee/{lower}/{upper}")
-    public List<Employee> getEmployeeBySalary(@RequestParam double lower, double upper) {
+    @GetMapping("/employee/salary/{lower}/{upper}")
+    public List<Employee> getEmployeeBySalary(@PathVariable double lower, @PathVariable double upper) {
         return employeeService.getEmployeeBySalary(lower, upper);
     }
-    @GetMapping("/employee/{projectId}")
+    @GetMapping("/employee/project/{projectId}")
     public List<Employee> getEmployeeByProjectId(@PathVariable int projectId) {
         return employeeService.getEmployeeByProject(projectId);
     }
