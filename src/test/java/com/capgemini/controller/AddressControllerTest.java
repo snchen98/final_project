@@ -12,9 +12,9 @@ import com.capgemini.exceptions.ResourceNotFoundException;
 import com.capgemini.service.AddressService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -35,110 +35,94 @@ public class AddressControllerTest {
 	@MockBean
 	private AddressService addressService;
 
+    static ObjectMapper mapper;
+    static Address address;
+    static int id;
+    static String street;
+    static String city;
+    static int zipcode;
+    static String state;
+    static String country;
+    static String expected;
+    static String resourceNotFoundMsg;
+    static String addressAlreadyExistsMsg;
+
+    @BeforeAll
+    public static void init() {
+        id = 123;
+        street = "main street";
+        city = "nyc";
+        zipcode = 12345;
+        state = "ny";
+        country = "us";
+        address = new Address(id, street, city, zipcode, state, country);
+        mapper = new ObjectMapper();
+        expected = String.format("{id:%d,street:\"%s\",city:\"%s\",zipcode:%d,state:\"%s\",country:\"%s\"}", id, street, city, zipcode, state, country);
+        resourceNotFoundMsg = "Can't find address with id: " + id;
+        addressAlreadyExistsMsg = "Address with id: " + id + " already exists";
+    }
+
     @Test
     public void getAllAddressSuccess() throws Exception {
-        int id = 123;
-        String street = "main street";
-        String city = "nyc";
-        int zipcode = 12345;
-        String state = "ny";
-        String country = "us";
-        Address address = new Address(id, street, city, zipcode, state, country);
         List<Address> addressL = new ArrayList<Address>();
         addressL.add(address);
-
         Mockito.when(addressService.getAllAddress()).thenReturn(addressL);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/address")
             .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        String expected = String.format("[{id:%d,street:\"%s\",city:\"%s\",zipcode:%d,state:\"%s\",country:\"%s\"}]", id, street, city, zipcode, state, country);
-        JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
+        JSONAssert.assertEquals("["+expected+"]", result.getResponse().getContentAsString(), false);
     }
 
     @Test
     public void getAddressByIdSuccess() throws Exception {
-        int id = 123;
-        String street = "main street";
-        String city = "nyc";
-        int zipcode = 12345;
-        String state = "ny";
-        String country = "us";
-        Address address = new Address(id, street, city, zipcode, state, country);
         Mockito.when(addressService.getAddressById(id)).thenReturn(address);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/address/"+id)
             .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        String expected = String.format("{id:%d,street:\"%s\",city:\"%s\",zipcode:%d,state:\"%s\",country:\"%s\"}", id, street, city, zipcode, state, country);
         JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
     }
 
     @Test
     public void getAddressByIdFail() throws Exception {
-        int id = 123;
-        Mockito.when(addressService.getAddressById(id)).thenThrow(new ResourceNotFoundException("Can't find address with id: " + id));
+        Mockito.when(addressService.getAddressById(id)).thenThrow(new ResourceNotFoundException(resourceNotFoundMsg));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/address/"+id)
             .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assertions.assertTrue(result.getResolvedException() instanceof ResourceNotFoundException);
-        Assertions.assertEquals("Can't find address with id: " + id, (result.getResolvedException().getMessage()));
+        Assertions.assertEquals(resourceNotFoundMsg, (result.getResolvedException().getMessage()));
     }
 
     @Test
     public void addAddressSucess() throws Exception {
-        Gson gson = new Gson();
-        int id = 123;
-        String street = "main street";
-        String city = "nyc";
-        int zipcode = 12345;
-        String state = "ny";
-        String country = "us";
-        Address address = new Address(id, street, city, zipcode, state, country);
-        String addressJson = gson.toJson(address);
+        String addressJson = mapper.writeValueAsString(address);
         Mockito.when(addressService.addAddress(any(Address.class))).thenReturn(address);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .post("/address")
             .content(addressJson)
             .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        String expected = String.format("{id:%d,street:\"%s\",city:\"%s\",zipcode:%d,state:\"%s\",country:\"%s\"}", id, street, city, zipcode, state, country);
         JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
     }
     
     @Test
     public void addAddressFail() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        int id = 123;
-        String street = "main street";
-        String city = "nyc";
-        int zipcode = 12345;
-        String state = "ny";
-        String country = "us";
-        Address address = new Address(id, street, city, zipcode, state, country);
         String addressJson = mapper.writeValueAsString(address);
-        Mockito.when(addressService.addAddress(any(Address.class))).thenThrow(new ResourceAlreadyExistsException("Address with id: " + id + " already exists"));
+        Mockito.when(addressService.addAddress(any(Address.class))).thenThrow(new ResourceAlreadyExistsException(addressAlreadyExistsMsg));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .post("/address")
             .content(addressJson)
             .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assertions.assertTrue(result.getResolvedException() instanceof ResourceAlreadyExistsException);
-        Assertions.assertEquals("Address with id: " + id + " already exists", (result.getResolvedException().getMessage()));
+        Assertions.assertEquals(addressAlreadyExistsMsg, (result.getResolvedException().getMessage()));
     }
 
     @Test
     public void setAddressDetailsSuccess() throws Exception {
-        Gson gson = new Gson();
-        int id = 123;
-        String street = "main street";
-        String city = "nyc";
-        int zipcode = 12345;
-        String state = "ny";
-        String country = "us";
-        Address address = new Address(id, street, city, zipcode, state, country);
-        String addressJson = gson.toJson(address);
+        String addressJson = mapper.writeValueAsString(address);
         Mockito.when(addressService.setAddressDetails(any(Address.class))).thenReturn(address);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .put("/address")
@@ -150,44 +134,35 @@ public class AddressControllerTest {
  
     @Test
     public void setAddressDetailsFail() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        int id = 123;
-        String street = "main street";
-        String city = "nyc";
-        int zipcode = 12345;
-        String state = "ny";
-        String country = "us";
-        Address address = new Address(id, street, city, zipcode, state, country);
         String addressJson = mapper.writeValueAsString(address);
-        Mockito.when(addressService.setAddressDetails(any(Address.class))).thenThrow(new ResourceAlreadyExistsException("Address with id: " + id + " already exists"));
+        Mockito.when(addressService.setAddressDetails(any(Address.class))).thenThrow(new ResourceAlreadyExistsException(addressAlreadyExistsMsg));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .put("/address")
             .content(addressJson)
             .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assertions.assertTrue(result.getResolvedException() instanceof ResourceAlreadyExistsException);
-        Assertions.assertEquals("Address with id: " + id + " already exists", (result.getResolvedException().getMessage()));
+        Assertions.assertEquals(addressAlreadyExistsMsg, (result.getResolvedException().getMessage()));
     }
 
     @Test
     public void deleteAddressByIdSuccess() throws Exception {
         int id = 123;
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .post("/address/" + id).accept(MediaType.APPLICATION_JSON);
+            .delete("/address/" + id).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assertions.assertEquals(200, result.getResponse().getStatus());
     }
 
     @Test
     public void deleteAddressByIdFail() throws Exception {
-        int id = 123;
         ObjectMapper mapper = new ObjectMapper();
-        Mockito.doThrow(new ResourceAlreadyExistsException("Address with id: " + id + " already exists")).when(addressService).deleteAddressById(id);
+        Mockito.doThrow(new ResourceAlreadyExistsException(addressAlreadyExistsMsg)).when(addressService).deleteAddressById(id);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .delete("/address/" + id).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Map<String, Object> jsonMap = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<Map<String, Object>>(){});
         Assertions.assertEquals("409", jsonMap.get("code"));
-        Assertions.assertEquals("Address with id: " + id + " already exists", (result.getResolvedException().getMessage()));
+        Assertions.assertEquals(addressAlreadyExistsMsg, (result.getResolvedException().getMessage()));
     }
 }
