@@ -45,7 +45,7 @@ public class AddressControllerTest {
     static String country;
     static String expected;
     static String resourceNotFoundMsg;
-    static String addressAlreadyExistsMsg;
+    static String resourceAlreadyExistsMsg;
 
     @BeforeAll
     public static void init() {
@@ -59,7 +59,7 @@ public class AddressControllerTest {
         mapper = new ObjectMapper();
         expected = String.format("{id:%d,street:\"%s\",city:\"%s\",zipcode:%d,state:\"%s\",country:\"%s\"}", id, street, city, zipcode, state, country);
         resourceNotFoundMsg = "Can't find address with id: " + id;
-        addressAlreadyExistsMsg = "Address with id: " + id + " already exists";
+        resourceAlreadyExistsMsg = "Address with id: " + id + " already exists";
     }
 
     @Test
@@ -110,14 +110,14 @@ public class AddressControllerTest {
     @Test
     public void addAddressFail() throws Exception {
         String addressJson = mapper.writeValueAsString(address);
-        Mockito.when(addressService.addAddress(any(Address.class))).thenThrow(new ResourceAlreadyExistsException(addressAlreadyExistsMsg));
+        Mockito.when(addressService.addAddress(any(Address.class))).thenThrow(new ResourceAlreadyExistsException(resourceAlreadyExistsMsg));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .post("/address")
             .content(addressJson)
             .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assertions.assertTrue(result.getResolvedException() instanceof ResourceAlreadyExistsException);
-        Assertions.assertEquals(addressAlreadyExistsMsg, (result.getResolvedException().getMessage()));
+        Assertions.assertEquals(resourceAlreadyExistsMsg, (result.getResolvedException().getMessage()));
     }
 
     @Test
@@ -135,19 +135,18 @@ public class AddressControllerTest {
     @Test
     public void setAddressDetailsFail() throws Exception {
         String addressJson = mapper.writeValueAsString(address);
-        Mockito.when(addressService.setAddressDetails(any(Address.class))).thenThrow(new ResourceAlreadyExistsException(addressAlreadyExistsMsg));
+        Mockito.when(addressService.setAddressDetails(any(Address.class))).thenThrow(new ResourceAlreadyExistsException(resourceAlreadyExistsMsg));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .put("/address")
             .content(addressJson)
             .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assertions.assertTrue(result.getResolvedException() instanceof ResourceAlreadyExistsException);
-        Assertions.assertEquals(addressAlreadyExistsMsg, (result.getResolvedException().getMessage()));
+        Assertions.assertEquals(resourceAlreadyExistsMsg, (result.getResolvedException().getMessage()));
     }
 
     @Test
     public void deleteAddressByIdSuccess() throws Exception {
-        int id = 123;
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .delete("/address/" + id).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -156,13 +155,12 @@ public class AddressControllerTest {
 
     @Test
     public void deleteAddressByIdFail() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        Mockito.doThrow(new ResourceAlreadyExistsException(addressAlreadyExistsMsg)).when(addressService).deleteAddressById(id);
+        Mockito.doThrow(new ResourceAlreadyExistsException(resourceAlreadyExistsMsg)).when(addressService).deleteAddressById(id);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .delete("/address/" + id).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Map<String, Object> jsonMap = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<Map<String, Object>>(){});
         Assertions.assertEquals("409", jsonMap.get("code"));
-        Assertions.assertEquals(addressAlreadyExistsMsg, (result.getResolvedException().getMessage()));
+        Assertions.assertEquals(resourceAlreadyExistsMsg, (result.getResolvedException().getMessage()));
     }
 }
